@@ -82,8 +82,8 @@ class Moves:
         '''
         attacks = random.randint(self.damage_low, self.damage_high)
         if random.randint(1, 100) <= self.rage:
-            other.health -= 2 * attack
-            self.rage += 15
+            other.health -= 2 * attacks
+            self.rage = 0
             message = '{} hit {} with a Critical Hit of {} damage'.format(
                 self.name, other.name, attacks)
         else:
@@ -92,3 +92,18 @@ class Moves:
             message = '{} hit {} for {} damage'.format(self.name, other.name,
                                                        attacks)
         return attacks, other.health, self.rage
+
+
+class Battle:
+    ''' Shows the current stats of both fighters '''
+
+    def __str__(self, other):
+        ''' (Battle, Battle) -> str
+
+        String Representation of the following:
+            (Name) || (health) hp || (Rage) Rage!! ||| (Name) hp || (health) hp || (Rage) Rage!!
+
+        '''
+        return "{} || {} hp || {} Rage!! ||| {} || {} hp || {} Rage!! ||".format(
+            self.name, self.health, self.rage, other.name, other.health,
+            other.rage)
