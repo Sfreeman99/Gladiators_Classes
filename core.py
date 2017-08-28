@@ -51,7 +51,7 @@ class Fighter:
         String Representation of the following:
             (Name) || (health) hp || (Rage) Rage!! || Low Damage: (Damage_low) || High Damage: (Damage_high)
         '''
-        return "{} || {} hp || {} Rage!! || Low Damage: {} || High Damage: {}\nMoves: {}".format(
+        return "{} || {} hp || {} Rage!! || Low Damage: {} || High Damage: {}\nMoves: {}\n\n".format(
             self.name, self.health, self.rage, self.damage_low,
             self.damage_high, ', '.join(map(str, self.moves)))
 

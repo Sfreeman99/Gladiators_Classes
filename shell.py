@@ -7,10 +7,14 @@ def main():
     health = 100
     rage = 0
     damage_low, damage_high = core.find_damages()
-    glad_1 = core.Fighter(name, health, rage, damage_low, damage_high, [], [])
+    moves = ['[A]ttack', '[H]eal']
+    glad_1 = core.Fighter(name, health, rage, damage_low, damage_high, moves,
+                          ['Transformations'])
     name = input('What is Gladiator Two\'s Name? \n: ').title()
     damage_low, damage_high = core.find_damages()
-    glad_2 = core.Fighter(name, health, rage, damage_low, damage_high, [], [])
+    moves = ['[A]ttack', '[H]eal']
+    glad_2 = core.Fighter(name, health, rage, damage_low, damage_high, moves,
+                          ['Transformations'])
     print(
         "{} has a damage low of {} and damage high of {}\n {} has a damage low of {} and a damage high of {}".
         format(glad_1.name, glad_1.damage_low, glad_1.damage_high, glad_2.name,
@@ -21,17 +25,16 @@ def main():
     print(battle)
     decision = ''
     while True:
-        # print(turn(glad_1, glad_2))
         battle.take_turn()
         print(battle)
         if (glad_2.is_dead() == True):
             print('Game Over!!! {} WINS!!!'.format(glad_1.name))
             quit()
-        # print(turn(glad_2, glad_1))
-        # print(core.Battle(glad_1))
         elif (glad_1.is_dead() == True):
             print('Game Over!!! {} WINS!!!'.format(glad_2.name))
             quit()
+        else:
+            continue
 
 
 if __name__ == '__main__':
