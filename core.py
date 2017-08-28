@@ -52,22 +52,6 @@ class Fighter:
             self.name, self.health, self.rage, self.damage_low,
             self.damage_high)
 
-    # def attack(self, other):
-    #     ''' (Fighter, Fighter) -> Numbers
-
-    #     Fighter attacks another Fighter to lower their health
-
-    #     '''
-    #     attacks = random.randint(self.damage_low, self.damage_high)
-    #     if random.randint(1,100) <= self.rage:
-    #         other.health -= 2 * attack
-    #         self.rage += 15
-    #         message = '{} hit {} with a Critical Hit of {} damage'.format(self.name, other.name, attacks)
-    #     else:
-    #         other.health -= attacks
-    #         self.rage += 15
-    #         message = '{} hit {} for {} damage'.format(self.name, other.name, attacks )
-
 
 class Moves:
     ''' a bunch of set moves '''
@@ -91,7 +75,21 @@ class Moves:
             self.rage += 15
             message = '{} hit {} for {} damage'.format(self.name, other.name,
                                                        attacks)
-        return attacks, other.health, self.rage
+        return attacks
+
+    def heal(self):
+        ''' (Moves) -> int
+
+        Gives the fighter 5 health
+
+        '''
+        heal = 5
+        if self.rage >= 15:
+            self.rage -= 15
+            self.health += heal
+            return heal
+        else:
+            return None
 
 
 class Battle:

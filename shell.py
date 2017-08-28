@@ -3,11 +3,19 @@ import core, random
 
 def turn(attacker, defender):
     while True:
-        decision = input('{}:\n what would you like to do?\n [A]ttack\n: '.
-                         format(attacker.name)).upper()
+        decision = input(
+            '{}:\n what would you like to do?\n [A]ttack\n[H]eal\n: '.format(
+                attacker.name)).upper()
         if decision == 'A':
-            return core.Moves.normal_attack(attacker, defender)
-            break
+            attacks = core.Moves.normal_attack(attacker, defender)
+            message = '{} hit {} with a {} point hit'.format(
+                attacker.name, defender.name, attacks)
+            return message
+        if decision == 'H':
+            heal = core.Moves.heal(attacker)
+            message = '{} healed {} points of health'.format(
+                attacker.name, heal)
+            return message
         else:
             print('Invalid Choice... Please try again\n')
 
@@ -30,13 +38,13 @@ print('Fight!!!'.center(100))
 print(core.Battle.__str__(glad_1, glad_2))
 decision = ''
 while True:
-    turn(glad_1, glad_2)
+    print(turn(glad_1, glad_2))
     print(core.Battle.__str__(glad_1, glad_2))
     if (glad_2.is_dead() == True):
         print('Game Over!!! {} WINS!!!'.format(glad_1.name))
         quit()
-    turn(glad_2, glad_1)
+    print(turn(glad_2, glad_1))
     print(core.Battle.__str__(glad_1, glad_2))
-    if (glad_2.is_dead() == True):
+    if (glad_1.is_dead() == True):
         print('Game Over!!! {} WINS!!!'.format(glad_2.name))
         quit()
