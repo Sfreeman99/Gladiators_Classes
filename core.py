@@ -15,12 +15,15 @@ def find_damages():
 class Fighter:
     ''' Initiation of parameters that will fit with all available fighters'''
 
-    def __init__(self, name, health, rage, damage_low, damage_high):
+    def __init__(self, name, health, rage, damage_low, damage_high, moves,
+                 forms):
         self.health = health
         self.rage = rage
         self.damage_low = damage_low
         self.damage_high = damage_high
         self.name = name
+        self.moves = moves
+        self.forms = forms
 
     def is_dead(self):
         ''' (Fighter) -> Bool
@@ -38,9 +41,9 @@ class Fighter:
         String Representation of the following:
             Fighter((Name), (Health), (Rage), (damage_low), (damage_high))
         '''
-        return "Fighter('{}', {}, {}, {}, {})".format(
+        return "Fighter('{}', {}, {}, {}, {}, [{}])".format(
             self.name, self.health, self.rage, self.damage_low,
-            self.damage_high)
+            self.damage_high, ', '.join(map(str, self.moves)))
 
     def __str__(self):
         ''' (Fighter) -> str
@@ -48,12 +51,55 @@ class Fighter:
         String Representation of the following:
             (Name) || (health) hp || (Rage) Rage!! || Low Damage: (Damage_low) || High Damage: (Damage_high)
         '''
-        return "{} || {} hp || {} Rage!! || Low Damage: {} || High Damage: {}".format(
+        return "{} || {} hp || {} Rage!! || Low Damage: {} || High Damage: {}\nMoves: {}".format(
             self.name, self.health, self.rage, self.damage_low,
-            self.damage_high)
+            self.damage_high, ', '.join(map(str, self.moves)))
 
 
-class Moves:
+class Saiyan(Fighter):
+    ''' Fighters based off of Dragonball Z '''
+
+    def __init__(self, damage_low, damage_high):
+        super().__init__(name, health, rage, damage_low, damage_high)
+        self.damage_low = random.randint(15, 20)
+        self.damage_high = 25
+        self.current_form = 0
+
+    FORM_NAMES = [
+        'Saiyan', 'Super Saiyan', 'Super Saiyan 2', 'Super Saiyan 3', 'SSG',
+        'SSGSS'
+    ]
+
+    def transform(self):
+        message = 'You Do Not Have Enough Rage!'
+        if self.rage < 80:
+            return 'You Do Not Have Enough Rage!'
+        elif self.current_form >= len(Saiyan.FORM_NAMES) - 1:
+            return 'Max Power!!! No More Forms'
+        else:
+            self.health += 10
+            self.damage_high += 10
+            self.damage_low += 10
+            self.rage = 20
+            self.current_form += 1
+            message = 'You Transformed To A {}'.format(
+                Saiyan.FORM_NAMES[self.current_form])
+            return message
+        return message
+
+    def __str__(self):
+        ''' (Saiyan) -> str
+
+        String Representation of the following:
+            (Curent Form) (Name) || (health) hp || (Rage) Rage!!
+        
+        '''
+        return "{} {} || {} hp || {} Rage!!".format(
+            self.FORM_NAMES[self.current_form], self.name, self.health,
+            self.rage)
+
+
+class Move:
     ''' a bunch of set moves '''
 
     def normal_attack(self, other):
@@ -91,17 +137,88 @@ class Moves:
         else:
             return None
 
+    def kamehameha(self, other):
+        ''' (Move, Fighter) -> int
+
+        Returns the damage of a kamehameha and if lucky you may do a super kamehameha which
+        is two times the damage of a regular kamehameha
+
+        '''
+        if self.rage >= 30:
+            if random.randint(1, 100) <= self.rage:
+                attack = 30 * 2
+                other.health -= attack
+                self.rage -= 30
+
+            else:
+                attack = 30
+                other.health -= attack
+                self.rage -= 30
+            return attack
+
+    def saiyan_transformation(self):
+        ''' (Saiyan) -> New Form
+        
+        Returns a new form if you meet the rage requirements
+        
+        '''
+        message = 'You Do Not Have Enough Rage!'
+        if self.rage < 80:
+            return 'You Do Not Have Enough Rage!'
+        elif self.current_form >= len(Saiyan.FORM_NAMES) - 1:
+            return 'Max Power!!! No More Forms'
+        else:
+            self.health += 10
+            self.damage_high += 10
+            self.damage_low += 10
+            self.rage = 20
+            self.current_form += 1
+            message = 'You Transformed To A {}'.format(
+                Saiyan.FORM_NAMES[self.current_form])
+            return message
+        return message
+
 
 class Battle:
     ''' Shows the current stats of both fighters '''
 
-    def __str__(self, other):
+    def __init__(self, fighter_1, fighter_2):
+        self.fighter_1 = fighter_1
+        self.fighter_2 = fighter_2
+        self.is_f1_turn = True
+
+    def take_turn(self):
+        ''' '''
+        if self.is_f1_turn:
+            attacker = self.fighter_1
+            defender = self.fighter_2
+            self.is_f1_turn = False
+        else:
+            attacker = self.fighter_2
+            defender = self.fighter_1
+            self.is_f1_turn = True
+        while True:
+            decision = input(
+                '{}:\n what would you like to do?\n [A]ttack\n[H]eal\n: '.
+                format(attacker.name)).upper()
+            if decision == 'A':
+                attacks = Move.normal_attack(attacker, defender)
+                message = '{} hit {} with a {} point hit'.format(
+                    attacker.name, defender.name, attacks)
+                return message
+            if decision == 'H':
+                heal = Move.heal(attacker)
+                message = '{} healed {} points of health'.format(
+                    attacker.name, heal)
+                return message
+            else:
+                print('Invalid Choice... Please try again\n')
+
+    def __str__(self):
         ''' (Battle, Battle) -> str
 
         String Representation of the following:
             (Name) || (health) hp || (Rage) Rage!! ||| (Name) hp || (health) hp || (Rage) Rage!!
 
         '''
-        return "{} || {} hp || {} Rage!! ||| {} || {} hp || {} Rage!! ||".format(
-            self.name, self.health, self.rage, other.name, other.health,
-            other.rage)
+        return "{} ||| {}\n".format(str(self.fighter_1), str(self.fighter_2))
