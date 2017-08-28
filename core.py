@@ -1,6 +1,17 @@
 import random
 
 
+def find_damages():
+    ''' None -> int, int
+
+    returns two random integars
+
+    '''
+    damage_low = random.randint(1, 10)
+    damage_high = random.randint(10, 20)
+    return damage_low, damage_high
+
+
 class Fighter:
     ''' Initiation of parameters that will fit with all available fighters'''
 
