@@ -42,8 +42,8 @@ def main():
             elif decision == 'Goten':
                 glad_1 = characters['Saiyan'][3]
         elif race_selection == 'Human':
-            decision = input('Which character do you want?\n{}\n: '.format('\n'.join(str(c.name) for c in characters['Human'])))
-                        
+            name = input('What is your name?').title()
+
     # glad_1 = core.Fighter(name, health, rage, damage_low, damage_high, moves,
     #                       ['Transformations'], current_form)
     name = input('What is Gladiator Two\'s Name? \n: ').title()
