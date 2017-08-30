@@ -15,10 +15,9 @@ def find_damages():
 class Fighter:
     ''' Initiation of parameters that will fit with all available fighters'''
 
-    def __init__(self, name, health, rage, damage_low, damage_high,
-                 forms, current_form):
-        self.health = health
-        self.rage = rage
+    def __init__(self, name, damage_low, damage_high, forms, current_form):
+        self.health = 100
+        self.rage = 0
         self.damage_low = damage_low
         self.damage_high = damage_high
         self.name = name
@@ -59,26 +58,33 @@ class Fighter:
 class Saiyan(Fighter):
     ''' Fighters based off of Dragonball Z '''
 
-    def __init__(self, name, health, rage, damage_low, damage_high,
-                 forms, current_form):
-        super().__init__(name, health, rage, damage_low, damage_high,
-                         forms, current_form)
-        self.moves = ['[K]amehameha', '[S]enzu Bean', '[A]ttack', '[T]ransform']
+    def __init__(self, name, damage_low, damage_high, forms, current_form):
+        super().__init__(name, damage_low, damage_high, forms, current_form)
+        self.moves = [
+            '[K]amehameha', '[S]enzu Bean', '[A]ttack', '[T]ransform', '[Skip]'
+        ]
+        self.health = 650
+        self.rage = 50
 
     def get_moves(self, other):
+        '''(Fighter, Fighter) -> str | int'''
         decision = ''
         while True:
-            decision = '{}: \n Moves: {}'.format(self.name, self.moves)
+            decision = input('{}: \n Moves: {}'.format(self.name, '\n\t'.join(
+                s for s in self.moves))).title()
             if decision == 'A':
-                return Normal_Attack.saiyan_attack(attacker, defender)
+                return Normal_Attack.saiyan_attack(self, other)
             elif decision == 'H':
-                return Heal.senzu_bean()
+                return Heal.senzu_bean(self)
             elif decision == 'K':
-                return Special.kamehameha(attacker, defender)
+                return Special.kamehameha(self, other)
             elif decision == 'T':
-                return Transformation.saiyan_transformation()
+                return Transformation.saiyan_transformation(self)
+            elif decision == 'Skip':
+                return Move.skip(self)
             else:
                 return 'Invalid Choice... Please Choose a Saiyan Move'
+
         def __str__(self):
             return super().__str__()
 
@@ -86,27 +92,29 @@ class Saiyan(Fighter):
 class Human(Fighter):
     ''' Information on a Human Fighter '''
 
-    def __init__(self, name, health, rage, damage_low, damage_high,
-                 forms, current_form):
-        super().__init__(name, health, rage, damage_low, damage_high,
-                         forms, current_form)
-        self.damage_low = 5
-        self.damage_high = 15
-        self.moves = ['[C]ombo Move', '[S]enzu Bean', '[A]ttack', '[T]ransform']
-
+    def __init__(self, name, damage_low, damage_high, forms, current_form):
+        super().__init__(name, damage_low, damage_high, forms, current_form)
+        self.health = 500
+        self.rage = 0
+        self.moves = [
+            '[C]ombo Move', '[S]enzu Bean', '[A]ttack', '[T]ransform', '[Skip]'
+        ]
 
     def get_moves(self, other):
         decision = ''
         while True:
-            decision = '{}: \n Moves: {}'.format(self.name, self.moves)
+            decision = input('{}: \n Moves: {}'.format(self.name, '\n\t'.join(
+                s for s in self.moves))).title()
             if decision == 'A':
-                return Normal_Attack.human_attack(attacker, defender)
+                return Normal_Attack.human_attack(self, other)
             elif decision == 'H':
-                return Heal.senzu_bean()
+                return Heal.senzu_bean(self)
             elif decision == 'C':
-                return Special.regular_special_move(attacker, defender)
+                return Special.regular_special_move(self, other)
             elif decision == 'T':
-                return Transformation.human_transformation()
+                return Transformation.human_transformation(self)
+            elif decision == 'Skip':
+                return Move.skip(self)
             else:
                 return 'Invalid Choice... Please Choose a Human Move'
 
@@ -121,80 +129,12 @@ class Move:
         self.attacker = attacker
         self.defender = defender
 
-    # def normal_attack(self, other):
-    #     ''' (Fighter, Fighter) -> Numbers
-
-    #     Fighter attacks another Fighter to lower their health
-
-    #     >>> Moves.normal_attack(Fighter('Blah', 100, 0, 15, 15),(Fighter('dook', 100, 0, 15, 15)))
-    #     (15, 85, 15)
-    #     '''
-    #     attacks = random.randint(self.damage_low, self.damage_high)
-    #     if random.randint(1, 100) <= self.rage:
-    #         other.health -= 2 * attacks
-    #         self.rage = 0
-    #         message = '{} hit {} with a Critical Hit of {} damage'.format(
-    #             self.name, other.name, attacks)
-    #     else:
-    #         other.health -= attacks
-    #         self.rage += 15
-    #         message = '{} hit {} for {} damage'.format(self.name, other.name,
-    #                                                    attacks)
-    #     return attacks
-
-    def heal(self):
-        ''' (Moves) -> int
-
-        Gives the fighter 5 health
-
-        '''
-        heal = 5
-        if self.rage >= 15:
-            self.rage -= 15
-            self.health += heal
-            return heal
-        else:
-            return None
-
-    def kamehameha(self, other):
-        ''' (Move, Fighter) -> int
-
-        Returns the damage of a kamehameha and if lucky you may do a super kamehameha which
-        is two times the damage of a regular kamehameha
-
-        '''
-        if self.rage >= 30:
-            if random.randint(1, 100) <= self.rage:
-                attack = 30 * 2
-                other.health -= attack
-                self.rage -= 30
-
-            else:
-                attack = 30
-                other.health -= attack
-                self.rage -= 30
-            return attack
-
-    def saiyan_transformation(self):
-        ''' (Saiyan) -> New Form
+    def skip(self):
+        '''(Move) -> int
         
-        Returns a new form if you meet the rage requirements
-        
-        '''
-        message = 'You Do Not Have Enough Rage!'
-        if self.rage < 80:
-            return 'You Do Not Have Enough Rage!'
-        elif self.current_form >= len(Saiyan.FORM_NAMES) - 1:
-            return 'Max Power!!! No More Forms'
-        else:
-            self.health += 10
-            self.damage_high += 10
-            self.damage_low += 10
-            self.rage = 20
-            self.current_form += 1
-            message = 'You Transformed To A {}'.format(
-                Saiyan.FORM_NAMES[self.current_form])
-            return message
+        If you skip you get 30 rage '''
+        self.rage += 30
+        message = 'You Skipped'
         return message
 
 
@@ -216,7 +156,7 @@ class Battle:
             attacker = self.fighter_2
             defender = self.fighter_1
             self.is_f1_turn = True
-        attacker.getmoves(attacker, defender)
+        attacker.get_moves(defender)
 
     def __str__(self):
         ''' (Battle, Battle) -> str
@@ -239,7 +179,7 @@ class Normal_Attack(Move):
 
         Fighter attacks another Fighter to lower their health
 
-        >>> Normal_Attack.human_attack(Fighter('Blah', 100, 0, 15, 15, [], []),(Fighter('dook', 100, 0, 15, 15, [], [])))
+        >>> Normal_Attack.human_attack(Fighter('Blah', 15, 15, [], 0),(Fighter('dook', 15, 15, [], 0)))
         15
         '''
         attacks = random.randint(self.damage_low, self.damage_high)
@@ -260,7 +200,7 @@ class Normal_Attack(Move):
 
         Fighter attacks another Fighter to lower their health
 
-        >>> Normal_Attack.saiyan_attack(Fighter('Blah', 100, 0, 15, 15, [], []),(Fighter('dook', 100, 0, 15, 15, [], [])))
+        >>> Normal_Attack.saiyan_attack(Fighter('Blah', 15, 15, [], 0),(Fighter('dook', 15, 15, [], 0)))
         15
         '''
         attacks = random.randint(self.damage_low, self.damage_high)
@@ -378,7 +318,7 @@ class Heal(Move):
         super().__init__(attacker, defender)
 
     def senzu_bean(self):
-        ''' (Fighter) -> int
+        ''' (Fighter) -> str
 
         If rage requirement meet the user gets a certain amount of health 
         based on how their luck is at that moment. It could be your greatest
@@ -386,11 +326,11 @@ class Heal(Move):
 
         '''
         bean = random.randint(1, 100)
-        luck = random.randint(1, 100) + bean
+        luck = random.randint(1, 100) - bean
         if self.rage >= 40:
             self.health += luck
             if luck > 0:
                 message = 'Your Very lucky'
             else:
                 message = 'You are an unlucky individual'
-        return luck
+        return message
