@@ -21,12 +21,7 @@ saiyan_characters = [
         'Saiyan', 'Super Saiyan', 'Super Saiyan 2', 'Super Saiyan Rage'
     ], current_form)
 ]
-characters = {
-    'Saiyan': saiyan_characters,
-    'Human': [],
-    'Fairy Tail': [],
-    'One Punch': []
-}
+characters = {'Saiyan': saiyan_characters, 'Human': []}
 
 
 def main():
